@@ -1,0 +1,169 @@
+{
+  "type": "command",
+  "ns": "sor_prod.applicantdatas",
+  "command": {
+    "aggregate": "applicantdatas",
+    "pipeline": [
+      {
+        "$match": {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "$and": [
+                    {
+                      "updatedat": {
+                        "$lte": {
+                          "$date": "2022-08-20T21:09:00.008Z"
+                        }
+                      }
+                    },
+                    {
+                      "updatedat": {
+                        "$gte": {
+                          "$date": "2022-07-21T21:12:00.008Z"
+                        }
+                      }
+                    },
+                    {
+                      "processing.status": {
+                        "$in": [
+                          "referred",
+                          "rejected"
+                        ]
+                      }
+                    },
+                    {
+                      "applicant_type": "primary"
+                    },
+                    {
+                      "sorad.third_party_data.soft_credit_pull": {
+                        "$exists": true
+                      }
+                    },
+                    {
+                      "$or": [
+                        {
+                          "attributes.external_referral_sent": {
+                            "$exists": false
+                          }
+                        },
+                        {
+                          "attributes.external_referral_sent": {
+                            "$ne": true
+                          }
+                        },
+                        {
+                          "$and": [
+                            {
+                              "createdat": {
+                                "$gte": {
+                                  "$date": "2022-07-21T21:12:00.008Z"
+                                }
+                              }
+                            },
+                            {
+                              "attributes.external_referral_sent": true
+                            },
+                            {
+                              "processing.status": "referred"
+                            },
+                            {
+                              "sorad.external_referral.applicationNumber": {
+                                "$exists": false
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "$group": {
+          "_id": 1,
+          "n": {
+            "$sum": 1
+          }
+        }
+      }
+    ],
+    "cursor": {},
+    "lsid": {
+      "id": {
+        "$binary": {
+          "base64": "6MkTaeyEQ4GPRKxL6wyFrA==",
+          "subType": "04"
+        }
+      }
+    },
+    "$clusterTime": {
+      "clusterTime": {
+        "$timestamp": {
+          "t": 1661029920,
+          "i": 22
+        }
+      },
+      "signature": {
+        "hash": {
+          "$binary": {
+            "base64": "Wd8TfA3HwUIhDeDO1MfOJ+9/geY=",
+            "subType": "00"
+          }
+        },
+        "keyId": 7085273437857382000
+      }
+    },
+    "$db": "sor_prod"
+  },
+  "planSummary": "IXSCAN { applicant_type: 1, attributes.external_referral_sent: 1, createdat: -1 }",
+  "keysExamined": 17066806,
+  "docsExamined": 17066806,
+  "cursorExhausted": true,
+  "numYields": 124822,
+  "nreturned": 1,
+  "queryHash": "BDE90874",
+  "planCacheKey": "F901CDD1",
+  "reslen": 261,
+  "locks": {
+    "FeatureCompatibilityVersion": {
+      "acquireCount": {
+        "r": 124824
+      }
+    },
+    "Global": {
+      "acquireCount": {
+        "r": 124824
+      }
+    },
+    "Mutex": {
+      "acquireCount": {
+        "r": 2
+      }
+    }
+  },
+  "readConcern": {
+    "level": "local",
+    "provenance": "implicitDefault"
+  },
+  "writeConcern": {
+    "w": "majority",
+    "wtimeout": 0,
+    "provenance": "implicitDefault"
+  },
+  "storage": {
+    "data": {
+      "bytesRead": 34220514687,
+      "timeReadingMicros": 852045925
+    }
+  },
+  "remote": "172.21.7.162:51452",
+  "protocol": "op_msg",
+  "durationMillis": 1854080,
+  "v": "5.0.10"
+}
