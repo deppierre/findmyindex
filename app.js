@@ -16,8 +16,6 @@ function readStage(myArray) {
     //test if array in value 
     if(Object.values(myArray))
         return Object.values(myArray)
-    
-    return false
 }
 
 const equality = []
@@ -30,14 +28,37 @@ const rawdata = JSON.parse(file)
 const { ns } = rawdata
 const { command: { pipeline:query } } = rawdata
 
+// query.forEach(element => {
+//     const myStage = readStage(element)
+
+//     //infine loop until readStage return false
+//     console.log(myStage)
+// });
+
+const myArray = []
+var number = 0
+function getKeys(data) {
+    return Object.entries(data).reduce((r, [key, value]) => {
+        // console.log(value)
+        r.push(key)
+        if (typeof value === 'object') r.push(getKeys(value))
+        
+        if (Array.isArray(value)) {
+            number++
+            var obj = {};
+            obj[number] = key
+
+            myArray.push(obj)
+        }
+        return r
+    }, [])
+  }
+  
+getKeys(query)
+console.log(myArray)
+
+
 console.log(`info:
     - namespace      : ${ns}
-    - number step(s) : ${query.length}
+    - number step(s) : ${myArray.length}
 `)
-
-query.forEach(element => {
-    const myStage = readStage(element)
-
-    //infine loop until readStage return false
-    console.log(myStage)
-});
